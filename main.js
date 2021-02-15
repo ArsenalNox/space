@@ -13,8 +13,12 @@ var center = {
 var enableCollison = true
 var centerVeiw = false
 var zoom = 1
+var globalColorregular = '#FFF' 
+var globalColorback = '0,0,0' 
+
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplayer = 1; //Больше - медленнее 
+
 var updateCount = 0
 var bodyselector = 0
 const g = 6.67 * Math.pow(10, -11)

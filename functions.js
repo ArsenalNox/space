@@ -1,6 +1,6 @@
 function update(draw=true){
     //ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = "rgba(255, 255, 255, "+alpha+")";
+    ctx.fillStyle = "rgba("+globalColorback+","+alpha+")";
     ctx.fillRect(0, 0, canvas.width, canvas.height)   
     updateCount++
     calculateBodyInteractions()
@@ -48,7 +48,7 @@ function drawBodies(){   //Отрисовка тел
                 ctx.fill();
                 ctx.stroke()
             }
-            bodies[i].color = "#000"
+            bodies[i].color = globalColorregular
         } else {
             ctx.beginPath();
             if(zoom !== 1){
@@ -60,7 +60,7 @@ function drawBodies(){   //Отрисовка тел
             ctx.strokeStyle = bodies[i].color;
             ctx.fill();
             ctx.stroke()
-            bodies[i].color = "#000"
+            bodies[i].color = globalColorregular
         }
     }
 }
@@ -185,7 +185,7 @@ function commonOrbit(num){
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: -40
@@ -201,7 +201,7 @@ function commonOrbit(num){
     let bodyNew = { 
         radius: 10,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -221,7 +221,7 @@ function commonTwoDOrbitWing(num){ //Крыло
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: -40
@@ -237,7 +237,7 @@ function commonTwoDOrbitWing(num){ //Крыло
         let bodyNew = { 
             radius: 0.5,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 40
@@ -252,7 +252,7 @@ function commonTwoDOrbitWing(num){ //Крыло
     let bodyNew = { 
         radius: 5,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -272,7 +272,7 @@ function commonTwoDOrbitSpiral(num){ //Спираль
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: -40
@@ -288,7 +288,7 @@ function commonTwoDOrbitSpiral(num){ //Спираль
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 40
@@ -303,7 +303,7 @@ function commonTwoDOrbitSpiral(num){ //Спираль
     let bodyNew = { 
         radius: 20,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -323,7 +323,7 @@ function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 40
@@ -339,7 +339,7 @@ function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 40
@@ -354,7 +354,7 @@ function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
     let bodyNew = { 
         radius: 20,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -374,7 +374,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 40
@@ -390,7 +390,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 40,
                 y: 0
@@ -406,7 +406,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: -40,
                 y: 0
@@ -422,7 +422,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
         let bodyNew = { 
             radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: -40
@@ -437,7 +437,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
     let bodyNew = { 
         radius: 20,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -456,7 +456,7 @@ function commonBinarySystem(num){
     let bodyNew1 = { 
         radius: 2,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 95000000
@@ -469,7 +469,7 @@ function commonBinarySystem(num){
     let bodyNew2 = { 
         radius: 2,
         mass: 600000000,
-        color: '#333',
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: -95000000
@@ -483,7 +483,7 @@ function commonBinarySystem(num){
         let bodyNew = { 
             radius: 1,
             mass: 10,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
                 y: 2.5
@@ -503,8 +503,8 @@ function blackHole(num){
     alpha = 1
     let bodyNew1 = { 
         radius: 2,
-        mass: 60000000000,
-        color: '#333',
+        mass: 600000000000,
+        color: globalColorregular,
         velocity:{
             x: 0,
             y: 0
@@ -517,16 +517,16 @@ function blackHole(num){
     bodies.push(bodyNew1)
     for(let i = 1; i<num; i++){
         let bodyNew = { 
-            radius: 5,
+            radius: 1,
             mass: 200,
-            color: '#333',
+            color: globalColorregular,
             velocity:{
                 x: 0,
-                y: -200
+                y: -(20*Math.sin(i))*2-200
             },
             position:{
-                x: center.x+i*10 + 503,
-                y: center.y - 500
+                x: center.x+i + 503,
+                y: center.y
             }
         }
         bodies.push(bodyNew)
@@ -583,7 +583,7 @@ function initPreset(id=0){
 
         case 7:
             if(debug){console.log('Black hole with 200-600 bodies');}
-            blackHole(Math.round(randomNumber(200,600)))
+            blackHole(700)
         break;
     }
     // if(Math.round(randomNumber(0,1))){
