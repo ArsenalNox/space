@@ -3,6 +3,7 @@ var showCalculationDetails = false
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
+var alpha = "0.5"
 
 var center = {
     x: canvas.width/2,
@@ -10,7 +11,7 @@ var center = {
 }
 
 var enableCollison = true
-var centerVeiw = true
+var centerVeiw = false
 var zoom = 1
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplayer = 1; //Больше - медленнее 
@@ -53,7 +54,7 @@ var bodiesToDelete = []
 var bodiesToMerge = []
 
 // initPreset(Math.round(randomNumber(0,5)))
-initPreset()
+initPreset(7)
 drawBodies()
 setInterval(update, 1)
 

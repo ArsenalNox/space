@@ -1,6 +1,6 @@
 function update(draw=true){
     //ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = "rgba(255, 255, 255, .1)";
+    ctx.fillStyle = "rgba(255, 255, 255, "+alpha+")";
     ctx.fillRect(0, 0, canvas.width, canvas.height)   
     updateCount++
     calculateBodyInteractions()
@@ -151,7 +151,7 @@ function populate(times=10){
         let rad, m
         if( choice > 98 ){
             rad = 10
-            m = rad*1000000
+            m = rad*10000000
         } else {
             rad = Math.round(randomNumber(1,5))
             m = rad*1000
@@ -199,7 +199,7 @@ function commonOrbit(num){
     }
 
     let bodyNew = { 
-        radius: 20,
+        radius: 10,
         mass: 600000000,
         color: '#333',
         velocity:{
@@ -235,7 +235,7 @@ function commonTwoDOrbitWing(num){ //Крыло
     }
     for(let i = 1; i<40; i++){
         let bodyNew = { 
-            radius: 1,
+            radius: 0.5,
             mass: 200,
             color: '#333',
             velocity:{
@@ -250,7 +250,7 @@ function commonTwoDOrbitWing(num){ //Крыло
         bodies.push(bodyNew)
     }
     let bodyNew = { 
-        radius: 20,
+        radius: 5,
         mass: 600000000,
         color: '#333',
         velocity:{
@@ -452,17 +452,97 @@ function commonTwoDorbitsCrest(num){ //4 линии
     console.log(bodies);
 }
 
-function commonBinarySystem(){
-
+function commonBinarySystem(num){
+    let bodyNew1 = { 
+        radius: 2,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 95000000
+        },
+        position:{
+            x: center.x+100,
+            y: center.y
+        }
+    }
+    let bodyNew2 = { 
+        radius: 2,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: -95000000
+        },
+        position:{
+            x: center.x-100,
+            y: center.y
+        }
+    }
+    for(let i=0; i<num; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 10,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 2.5
+            },
+            position:{
+                x: center.x+500+i*70,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    bodies.push(bodyNew1, bodyNew2)
 }
 
+function blackHole(num){
+    enableCollison = false
+    alpha = 1
+    let bodyNew1 = { 
+        radius: 2,
+        mass: 60000000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x+100,
+            y: center.y
+        }
+    }
+    bodies.push(bodyNew1)
+    for(let i = 1; i<num; i++){
+        let bodyNew = { 
+            radius: 5,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: -200
+            },
+            position:{
+                x: center.x+i*10 + 503,
+                y: center.y - 500
+            }
+        }
+        bodies.push(bodyNew)
+    }
+}
+
+/**
+ * @param {a} number min value 
+ * @param {b} number max value*/
 function randomNumber(a, b){
     return a+(Math.random()*(b-a))
 }
 
 function initPreset(id=0){
     if(id==0){
-        id=Math.round(randomNumber(0,5))
+        id=Math.round(randomNumber(0,6))
     }
     if(debug){console.log('selecting animation '+id);}
     switch(id){
@@ -477,30 +557,42 @@ function initPreset(id=0){
         break;
     
         case 2:
-            if(debug){console.log('Main body two-directional orbit');}
+            if(debug){console.log('Main body two-directional orbits');}
             commonTwoDOrbitWing(randomNumber(1,10))
         break;
 
         case 3:
+            if(debug){console.log('Main body two one-directional spiral orbits');}
             commonTwoDOrbitSpiral(randomNumber(1,10))
         break;
             
         case 4:
+            if(debug){console.log('Main body two-directional terminating orbit');}
             commonTwoDorbitsDestruct(randomNumber(1,10))
         break;
 
         case 5:
+            if(debug){console.log('Main body four spiral orbits');}
             commonTwoDorbitsCrest(randomNumber(1,10))
         break;
 
         case 6:
-            commonBinarySystem()
+            if(debug){console.log('binarry system with n{1-10} bodies');}
+            commonBinarySystem(Math.round(randomNumber(1,10)))
+        break;
+
+        case 7:
+            if(debug){console.log('Black hole with 200-600 bodies');}
+            blackHole(Math.round(randomNumber(200,600)))
         break;
     }
+    // if(Math.round(randomNumber(0,1))){
+    //     centerVeiw = true
+    // }
     bodyselector = Math.round(randomNumber(1, bodies.length-1))
     if(debug){
         if(centerVeiw){
-            console.log('Selected body '+bodyselector+' for spectating');
+            console.log('Selected body '+ bodyselector +' for spectating');
         }
     }
 }
