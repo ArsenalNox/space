@@ -33,21 +33,22 @@ function resizeHandle(){
 function drawBodies(){   //Отрисовка тел
     for (i in bodies) {
         if(centerVeiw){
-            if(i == 0){
+            if(i == bodyselector){
                 ctx.beginPath();
                 ctx.arc(center.x, center.y, bodies[i].radius, 0, 2 * Math.PI);
                 ctx.fillStyle = 'black';
                 ctx.fill();
                 ctx.stroke()
             } else {
-                offsetX = center.x + (-bodies[0].position.x);
-                offsetY = center.y + (-bodies[0].position.y);
+                offsetX = center.x + (-bodies[bodyselector].position.x);
+                offsetY = center.y + (-bodies[bodyselector].position.y);
                 ctx.beginPath();
-                ctx.arc( (bodies[i].position.x + offsetX) / zoom , (bodies[i].position.y + offsetY) / zoom, bodies[i].radius / (zoom/2), 0, 2 * Math.PI);
+                ctx.arc( (bodies[i].position.x + offsetX) / zoom , (bodies[i].position.y + offsetY) / zoom, bodies[i].radius, 0, 2 * Math.PI);
                 ctx.fillStyle = bodies[i].color;
                 ctx.fill();
                 ctx.stroke()
             }
+            bodies[i].color = "#000"
         } else {
             ctx.beginPath();
             if(zoom !== 1){
@@ -78,6 +79,7 @@ function calculateBodyInteractions(){
             let body2 = bodies[j] 
             //let force  = g * ( ( body1.mass * body2.mass) / Math.pow((Math.abs( Math.sqrt(Math.pow(body1.position.x,2) + Math.pow(body1.position.y,2)) - Math.sqrt(Math.pow(body2.position.x,2) + Math.pow(body2.position.y,2))) ), 2 ))
             let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
+            if(distance==0){continue}
             let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
             if(debug && showCalculationDetails){
                 console.log(i,j,force)
@@ -214,11 +216,254 @@ function commonOrbit(num){
     console.log(bodies);
 }
 
+function commonTwoDOrbitWing(num){ //Крыло
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: -40
+            },
+            position:{
+                x: center.x+i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 40
+            },
+            position:{
+                x: center.x+i*10+5,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    let bodyNew = { 
+        radius: 20,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    
+    bodies.push(bodyNew)
+    console.log(bodies);
+}
+
+function commonTwoDOrbitSpiral(num){ //Спираль
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: -40
+            },
+            position:{
+                x: center.x+i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 40
+            },
+            position:{
+                x: center.x-i*10-5,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    let bodyNew = { 
+        radius: 20,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    
+    bodies.push(bodyNew)
+    console.log(bodies);
+}
+
+function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 40
+            },
+            position:{
+                x: center.x+i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 40
+            },
+            position:{
+                x: center.x-i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    let bodyNew = { 
+        radius: 20,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    
+    bodies.push(bodyNew)
+    console.log(bodies);
+}
+
+function commonTwoDorbitsCrest(num){ //4 линии
+    for(let i = 1; i<40; i++){ //правая
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: 40
+            },
+            position:{
+                x: center.x+i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){ //верхняя
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 40,
+                y: 0
+            },
+            position:{
+                x: center.x,
+                y: center.y-i*10
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){ //нижняя
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: -40,
+                y: 0
+            },
+            position:{
+                x: center.x,
+                y: center.y+i*10
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    for(let i = 1; i<40; i++){ //Левая
+        let bodyNew = { 
+            radius: 1,
+            mass: 200,
+            color: '#333',
+            velocity:{
+                x: 0,
+                y: -40
+            },
+            position:{
+                x: center.x-i*10,
+                y: center.y
+            }
+        }
+        bodies.push(bodyNew)
+    }
+    let bodyNew = { 
+        radius: 20,
+        mass: 600000000,
+        color: '#333',
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    
+    bodies.push(bodyNew)
+    console.log(bodies);
+}
+
+function commonBinarySystem(){
+
+}
+
 function randomNumber(a, b){
     return a+(Math.random()*(b-a))
 }
 
 function initPreset(id=0){
+    if(id==0){
+        id=Math.round(randomNumber(0,5))
+    }
     if(debug){console.log('selecting animation '+id);}
     switch(id){
         case 0:
@@ -232,12 +477,30 @@ function initPreset(id=0){
         break;
     
         case 2:
-        
+            if(debug){console.log('Main body two-directional orbit');}
+            commonTwoDOrbitWing(randomNumber(1,10))
         break;
 
         case 3:
-        
+            commonTwoDOrbitSpiral(randomNumber(1,10))
         break;
-                
+            
+        case 4:
+            commonTwoDorbitsDestruct(randomNumber(1,10))
+        break;
+
+        case 5:
+            commonTwoDorbitsCrest(randomNumber(1,10))
+        break;
+
+        case 6:
+            commonBinarySystem()
+        break;
+    }
+    bodyselector = Math.round(randomNumber(1, bodies.length-1))
+    if(debug){
+        if(centerVeiw){
+            console.log('Selected body '+bodyselector+' for spectating');
+        }
     }
 }

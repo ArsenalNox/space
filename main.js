@@ -10,12 +10,12 @@ var center = {
 }
 
 var enableCollison = true
-var centerVeiw = false
+var centerVeiw = true
 var zoom = 1
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplayer = 1; //Больше - медленнее 
 var updateCount = 0
-
+var bodyselector = 0
 const g = 6.67 * Math.pow(10, -11)
 
 window.onresize = resizeHandle
@@ -53,7 +53,7 @@ var bodiesToDelete = []
 var bodiesToMerge = []
 
 // initPreset(Math.round(randomNumber(0,5)))
-initPreset(1)
+initPreset()
 drawBodies()
 setInterval(update, 1)
 
