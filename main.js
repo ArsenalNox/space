@@ -3,7 +3,7 @@ var showCalculationDetails = false
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
-var alpha = "0.05"
+var alpha = "1"
 var readyThreads = 0
 var center = {
     x: canvas.width/2,
@@ -13,8 +13,8 @@ var center = {
 var enableCollison = true
 var centerVeiw = 0
 var zoom = 1
-var globalColorregular = '#FFF' 
-var globalColorback = '0,0,0' 
+var globalColorregular = '#000' 
+var globalColorback = '155,155,155' 
 
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplayer = 1; //Больше - медленнее 
@@ -25,33 +25,6 @@ const g = 6.67 * Math.pow(10, -11)
 
 window.onresize = resizeHandle
 resizeHandle()
-
-let bodyNew1 = { 
-    radius: 20,
-    mass: 60000000,
-    color: '#333',
-    velocity:{
-        x: 1610000*2,
-        y: 0
-    },
-    position:{
-        x: center.x,
-        y: center.y-200
-    }
-}
-let bodyNew2 = { 
-    radius: 20,
-    mass: 60000000,
-    color: '#333',
-    velocity:{
-        x: -1610000*2,
-        y: 0
-    },
-    position:{
-        x: center.x,
-        y: center.y+200
-    }
-}
 
 var bodies = [   ]
 var bodiesToDelete = []

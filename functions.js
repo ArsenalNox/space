@@ -47,9 +47,11 @@ function drawBodies(){   //Отрисовка тел
             }
             bodies[i].color = globalColorregular
         } else {
+            if( (bodies[i].position.x < 0) || (bodies[i].position.x > canvas.width) || (bodies[i].position.y < 0) || (bodies[i].position.y > canvas.width)){continue}
             ctx.beginPath();
             if(zoom !== 1){
-                ctx.arc(bodies[i].position.x / zoom , bodies[i].position.y / zoom, bodies[i].radius / (zoom/2), 0, 2 * Math.PI);
+                // ctx.arc(bodies[i].position.x / zoom , bodies[i].position.y / zoom, bodies[i].radius / (zoom/2), 0, 2 * Math.PI);
+                ctx.fillRect(bodies[i].position.x / zoom , bodies[i].position.y / zoom, 1,1)
             } else {
                 ctx.arc(bodies[i].position.x, bodies[i].position.y, bodies[i].radius, 0, 2 * Math.PI);
             }
@@ -120,6 +122,21 @@ function populate(times=10){
  * @param {num} number кол-во тел на орбите
  */
 function commonOrbit(num){
+    let bodyNew = { 
+        radius: 10,
+        mass: 600000000,
+        color: globalColorregular,
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    
+    bodies.push(bodyNew)
     for(let i = 1; i<100; i++){
         let bodyNew = { 
             radius: 1,
@@ -137,8 +154,13 @@ function commonOrbit(num){
         bodies.push(bodyNew)
     }
 
+ 
+    console.log(bodies);
+}
+
+function commonTwoDOrbitWing(num){ //Крыло
     let bodyNew = { 
-        radius: 10,
+        radius: 5,
         mass: 600000000,
         color: globalColorregular,
         velocity:{
@@ -152,10 +174,6 @@ function commonOrbit(num){
     }
     
     bodies.push(bodyNew)
-    console.log(bodies);
-}
-
-function commonTwoDOrbitWing(num){ //Крыло
     for(let i = 1; i<40; i++){
         let bodyNew = { 
             radius: 1,
@@ -188,8 +206,13 @@ function commonTwoDOrbitWing(num){ //Крыло
         }
         bodies.push(bodyNew)
     }
+   
+    console.log(bodies);
+}
+
+function commonTwoDOrbitSpiral(num){ //Спираль
     let bodyNew = { 
-        radius: 5,
+        radius: 20,
         mass: 600000000,
         color: globalColorregular,
         velocity:{
@@ -203,10 +226,6 @@ function commonTwoDOrbitWing(num){ //Крыло
     }
     
     bodies.push(bodyNew)
-    console.log(bodies);
-}
-
-function commonTwoDOrbitSpiral(num){ //Спираль
     for(let i = 1; i<40; i++){
         let bodyNew = { 
             radius: 1,
@@ -239,6 +258,11 @@ function commonTwoDOrbitSpiral(num){ //Спираль
         }
         bodies.push(bodyNew)
     }
+  
+    console.log(bodies);
+}
+
+function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
     let bodyNew = { 
         radius: 20,
         mass: 600000000,
@@ -254,10 +278,6 @@ function commonTwoDOrbitSpiral(num){ //Спираль
     }
     
     bodies.push(bodyNew)
-    console.log(bodies);
-}
-
-function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
     for(let i = 1; i<40; i++){
         let bodyNew = { 
             radius: 1,
@@ -290,6 +310,11 @@ function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
         }
         bodies.push(bodyNew)
     }
+
+    console.log(bodies);
+}
+
+function commonTwoDorbitsCrest(num){ //4 линии
     let bodyNew = { 
         radius: 20,
         mass: 600000000,
@@ -305,10 +330,6 @@ function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
     }
     
     bodies.push(bodyNew)
-    console.log(bodies);
-}
-
-function commonTwoDorbitsCrest(num){ //4 линии
     for(let i = 1; i<40; i++){ //правая
         let bodyNew = { 
             radius: 1,
@@ -373,21 +394,7 @@ function commonTwoDorbitsCrest(num){ //4 линии
         }
         bodies.push(bodyNew)
     }
-    let bodyNew = { 
-        radius: 20,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
     
-    bodies.push(bodyNew)
     console.log(bodies);
 }
 
@@ -439,10 +446,9 @@ function commonBinarySystem(num){
 
 function blackHole3Dline(num){
     enableCollison = false
-    alpha = 1
     let bodyNew1 = { 
         radius: 2,
-        mass: 600000000000,
+        mass: 6000000000000,
         color: globalColorregular,
         velocity:{
             x: 0,
@@ -460,12 +466,12 @@ function blackHole3Dline(num){
             mass: 10,
             color: globalColorregular,
             velocity:{
-                x: 0,
-                y: -10
+                x: -20,
+                y: -70
             },
             position:{
-                x: center.x + 500+i*2,
-                y: center.y
+                x: center.x + 400 + i/2,
+                y: center.y - 100 + Math.sin(i)*50
             }
         }
         bodies.push(bodyNew)
@@ -558,7 +564,7 @@ function initPreset(id=0){
 
         case 7:
             if(debug){console.log('Black hole line with 1000 bodies');}
-            blackHole3Dline(2000)
+            blackHole3Dline(4000)
         break;
 
         case 8:
@@ -578,10 +584,9 @@ function initPreset(id=0){
  
 }
 
-var num_threads = 4;
-var threadsToWait = 4
+var num_threads = 16;
+var threadsToWait = 1
 var MT = new Multithread(num_threads);
-
 
 var mtCalcBody = MT.process(
     function(bodies, g, forceMultiplayer, pointer) { 
@@ -590,15 +595,13 @@ var mtCalcBody = MT.process(
             let body1 = bodies[i]
             var vx = 0
             var vy = 0
-            for (j in bodies) {
-                if(j==i){continue}
-                let body2 = bodies[j] 
-                if((body1.position.x == body2.position.x) || (body1.position.y == body2.position.y)){continue}
-                let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
-                let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
-                vx += ((body2.position.x - body1.position.x) * force * forceMultiplayer ) ;
-                vy += ((body2.position.y - body1.position.y) * force * forceMultiplayer ) ;
-           }
+            
+            let body2 = bodies[0] 
+            let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
+            let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
+            vx += ((body2.position.x - body1.position.x) * force * forceMultiplayer ) ;
+            vy += ((body2.position.y - body1.position.y) * force * forceMultiplayer ) ;
+        
            velocity.push({vx,vy})
         }
         return [velocity, pointer]
@@ -614,9 +617,11 @@ var mtCalcBody = MT.process(
             bodies[i].position.y += bodies[i].velocity.y  / (bodies[i].mass * massMultiplayer)
         }
         readyThreads++
+        console.log('thread done '+readyThreads);
         if(readyThreads==threadsToWait){
             drawBodies()
             readyThreads=0
+
             updateCount++
 
             calculateBodyInteractions()
