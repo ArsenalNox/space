@@ -3,15 +3,15 @@ var showCalculationDetails = false
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
-var alpha = "0.5"
-
+var alpha = "0.05"
+var readyThreads = 0
 var center = {
     x: canvas.width/2,
     y: canvas.height/2
 }
 
 var enableCollison = true
-var centerVeiw = false
+var centerVeiw = 0
 var zoom = 1
 var globalColorregular = '#FFF' 
 var globalColorback = '0,0,0' 
@@ -60,8 +60,13 @@ var bodiesToMerge = []
 // initPreset(Math.round(randomNumber(0,5)))
 initPreset(7)
 drawBodies()
-setInterval(update, 1)
-
+// update()
+// setInterval(update, 1)
+calculateBodyInteractions()
+setInterval(()=>{
+    console.log(updateCount);
+    updateCount=0 
+},1000)
 /**
 color: "#333"
 mass: 600000000

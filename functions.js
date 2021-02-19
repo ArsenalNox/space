@@ -1,12 +1,6 @@
 function update(draw=true){
     //ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = "rgba("+globalColorback+","+alpha+")";
-    ctx.fillRect(0, 0, canvas.width, canvas.height)   
-    updateCount++
-    calculateBodyInteractions()
-    if(draw){
-        drawBodies();
-    }
+   
 }
 
 function resizeHandle(){
@@ -31,6 +25,8 @@ function resizeHandle(){
  * @param {array} bodies Массив всех тел для отрисовки
  */
 function drawBodies(){   //Отрисовка тел
+    ctx.fillStyle = "rgba("+globalColorback+","+alpha+")";
+    ctx.fillRect(0, 0, canvas.width, canvas.height)   
     for (i in bodies) {
         if(centerVeiw){
             if(i == bodyselector){
@@ -44,6 +40,7 @@ function drawBodies(){   //Отрисовка тел
                 offsetY = center.y + (-bodies[bodyselector].position.y);
                 ctx.beginPath();
                 ctx.arc( (bodies[i].position.x + offsetX) / zoom , (bodies[i].position.y + offsetY) / zoom, bodies[i].radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = bodies[i].color;
                 ctx.fillStyle = bodies[i].color;
                 ctx.fill();
                 ctx.stroke()
@@ -71,73 +68,15 @@ function drawBodies(){   //Отрисовка тел
  */
 function calculateBodyInteractions(){
     /** Расчитывание взаимодействий */
-    for (i in bodies){
-        let body1 = bodies[i]
-        for (j in bodies) {
-            if(j == i) { continue}
-            if( bodiesToDelete.includes(j) || bodiesToDelete.includes(i) || bodiesToMerge.includes(j) || bodiesToMerge.includes(j)){continue}
-            let body2 = bodies[j] 
-            //let force  = g * ( ( body1.mass * body2.mass) / Math.pow((Math.abs( Math.sqrt(Math.pow(body1.position.x,2) + Math.pow(body1.position.y,2)) - Math.sqrt(Math.pow(body2.position.x,2) + Math.pow(body2.position.y,2))) ), 2 ))
-            let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
-            if(distance==0){continue}
-            let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
-            if(debug && showCalculationDetails){
-                console.log(i,j,force)
-                console.log(body1.mass, body2.mass, distance);
-            }
-            body1.velocity.x += ((body2.position.x - body1.position.x) * force * forceMultiplayer ) 
-            body1.velocity.y += ((body2.position.y - body1.position.y) * force * forceMultiplayer ) 
-           
-            if(enableCollison){ //Если коллизия включена
-                let futurePos1 = {
-                    x: body1.position.x + (body1.velocity.x / (body1.mass * massMultiplayer)),
-                    y: body1.position.y + (body1.velocity.y / (body1.mass * massMultiplayer))
-                }
-                let futurePos2 = {
-                    x: body2.position.x + (body2.velocity.x / (body2.mass * massMultiplayer)),
-                    y: body2.position.y + (body2.velocity.y / (body2.mass * massMultiplayer))
-                }
-                let futuredistance = Math.sqrt(Math.pow(futurePos1.x - futurePos2.x,2) + Math.pow(futurePos1.y - futurePos2.y, 2))
-                if( body1.radius + body2.radius > futuredistance ){
-                    if(body1.mass > body2.mass){
-                        bodiesToMerge.push([i,j])
-                        bodiesToDelete.push(j)
-                        body1.velocity.x += body2.velocity.x
-                        body1.velocity.y += body2.velocity.y
-                    } else { 
-                        bodiesToMerge.push([i,j])
-                        bodiesToDelete.push(i)
-                        body2.velocity.x += body1.velocity.x
-                        body2.velocity.y += body1.velocity.y
-                    }
-                    
-                    body1.color = "#f00";
-                    body2.color = "#f00";
-                }
-            }
+    let part = Math.ceil(bodies.length/threadsToWait)
+    for(let i=0; i < threadsToWait; i++){
+        if(i==threadsToWait-1){
+            mtCalcBody(bodies, g, forceMultiplayer, [part*i, bodies.length])
+            continue
         }
-       
+        mtCalcBody(bodies, g, forceMultiplayer, [part*i, part*(i+1)])
     }
-    if(enableCollison){
-        for(let i=0; i < bodiesToMerge.length; i++){
-            bodies[bodiesToMerge[i][0]].mass += bodies[bodiesToMerge[i][1]].mass
-        }
-
-        for(let i=0; i < bodiesToDelete.length; i++){
-            if(debug){
-                console.log(bodies[bodiesToDelete[i]]);
-                console.log('Deleted '+bodiesToDelete[i]+'\n'+bodies.length);}
-            bodies.splice(bodiesToDelete[i]-i, 1)
-        }
-        bodiesToDelete = []
-        bodiesToMerge = []
-    }
-
-    /** Изменение координат в соответсвии с изменением  */
-    for (i in bodies) {
-        bodies[i].position.x += bodies[i].velocity.x  / (bodies[i].mass * massMultiplayer)
-        bodies[i].position.y += bodies[i].velocity.y  / (bodies[i].mass * massMultiplayer)
-    }
+  
 }
 
 /**
@@ -498,7 +437,7 @@ function commonBinarySystem(num){
     bodies.push(bodyNew1, bodyNew2)
 }
 
-function blackHole(num){
+function blackHole3Dline(num){
     enableCollison = false
     alpha = 1
     let bodyNew1 = { 
@@ -518,20 +457,56 @@ function blackHole(num){
     for(let i = 1; i<num; i++){
         let bodyNew = { 
             radius: 1,
-            mass: 200,
+            mass: 10,
             color: globalColorregular,
             velocity:{
                 x: 0,
-                y: -(20*Math.sin(i))*2-200
+                y: -10
             },
             position:{
-                x: center.x+i + 503,
+                x: center.x + 500+i*2,
                 y: center.y
             }
         }
         bodies.push(bodyNew)
     }
 }
+
+function blackHoleMathFlower(num){
+    enableCollison = false
+    alpha = 1
+    let bodyNew1 = { 
+        radius: 2,
+        mass: 600000000000,
+        color: globalColorregular,
+        velocity:{
+            x: 0,
+            y: 0
+        },
+        position:{
+            x: center.x,
+            y: center.y
+        }
+    }
+    // bodies.push(bodyNew1)
+    for(let i = 1; i<num; i++){
+        let bodyNew = { 
+            radius: 1,
+            mass: 10,
+            color: globalColorregular,
+            velocity:{
+                x: 0,
+                y: 0
+            },
+            position:{
+                x: center.x+i*Math.sin(i),
+                y: center.y+i*Math.cos(i)
+            }
+        }
+        bodies.push(bodyNew)
+    }
+}
+
 
 /**
  * @param {a} number min value 
@@ -582,8 +557,13 @@ function initPreset(id=0){
         break;
 
         case 7:
-            if(debug){console.log('Black hole with 200-600 bodies');}
-            blackHole(700)
+            if(debug){console.log('Black hole line with 1000 bodies');}
+            blackHole3Dline(2000)
+        break;
+
+        case 8:
+            if(debug){console.log('Black hole flower with 700 bodies');}
+            blackHoleMathFlower(1000)
         break;
     }
     // if(Math.round(randomNumber(0,1))){
@@ -595,4 +575,53 @@ function initPreset(id=0){
             console.log('Selected body '+ bodyselector +' for spectating');
         }
     }
+ 
 }
+
+var num_threads = 4;
+var threadsToWait = 4
+var MT = new Multithread(num_threads);
+
+
+var mtCalcBody = MT.process(
+    function(bodies, g, forceMultiplayer, pointer) { 
+        let velocity = []
+        for (let i = pointer[0]; i< pointer[1]; i ++){
+            let body1 = bodies[i]
+            var vx = 0
+            var vy = 0
+            for (j in bodies) {
+                if(j==i){continue}
+                let body2 = bodies[j] 
+                if((body1.position.x == body2.position.x) || (body1.position.y == body2.position.y)){continue}
+                let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
+                let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
+                vx += ((body2.position.x - body1.position.x) * force * forceMultiplayer ) ;
+                vy += ((body2.position.y - body1.position.y) * force * forceMultiplayer ) ;
+           }
+           velocity.push({vx,vy})
+        }
+        return [velocity, pointer]
+    },
+    function(r) { 
+        let count = 0
+        for(let i=r[1][0]; i<r[1][1]; i++){
+            bodies[i].velocity.x += r[0][count].vx  
+            bodies[i].velocity.y += r[0][count].vy   
+            count++
+        
+            bodies[i].position.x += bodies[i].velocity.x  / (bodies[i].mass * massMultiplayer)
+            bodies[i].position.y += bodies[i].velocity.y  / (bodies[i].mass * massMultiplayer)
+        }
+        readyThreads++
+        if(readyThreads==threadsToWait){
+            drawBodies()
+            readyThreads=0
+            updateCount++
+
+            calculateBodyInteractions()
+        }
+    }
+);
+
+ 
