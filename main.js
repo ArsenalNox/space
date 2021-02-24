@@ -3,7 +3,7 @@ var showCalculationDetails = false
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
-var alpha = "1"
+var alpha = "0.01"
 var readyThreads = 0
 var center = {
     x: canvas.width/2,
@@ -13,8 +13,12 @@ var center = {
 var enableCollison = true
 var centerVeiw = 0
 var zoom = 1
-var globalColorregular = '#000' 
-var globalColorback = '155,155,155' 
+
+// var globalColorregular = '#000' 
+// var globalColorback = '155,155,155' 
+var globalColorregular = '#fff' 
+var globalColorback = '0,0,0' 
+
 
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplayer = 1; //Больше - медленнее 
@@ -36,10 +40,14 @@ drawBodies()
 // update()
 // setInterval(update, 1)
 calculateBodyInteractions()
+document.getElementById('body-info-quant').innerText = bodies.length
+
 setInterval(()=>{
-    console.log(updateCount);
+    document.getElementById('sim-speed').innerText = updateCount
     updateCount=0 
 },1000)
+ctx.clearRect(0, 0, canvas.width, canvas.height)
+   
 /**
 color: "#333"
 mass: 600000000
