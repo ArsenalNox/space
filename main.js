@@ -3,7 +3,7 @@ var showCalculationDetails = false
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
-var alpha = "0.5"
+var alpha = "0.01"
 
 var center = {
     x: canvas.width/2,
@@ -11,7 +11,7 @@ var center = {
 }
 
 var enableCollison = true
-var centerVeiw = false
+var centerVeiw = 1
 var zoom = 1
 var globalColorregular = '#FFF' 
 var globalColorback = '0,0,0' 
@@ -57,22 +57,35 @@ var bodies = [   ]
 var bodiesToDelete = []
 var bodiesToMerge = []
 
-// initPreset(Math.round(randomNumber(0,5)))
-initPreset(7)
+let Body = class {
+    /**
+     * @param {num} radius 
+     * @param {num} mass 
+     * @param {num} vx 
+     * @param {num} vy 
+     * @param {num} px 
+     * @param {num} py 
+     */
+    constructor(radius=1, mass=1, vx=0, vy=0, px=0, py=0){
+        this.radius = radius
+        this.mass = mass
+        this.velocity = {x: vx, y: vy} 
+        this.position = {x: center.x + px, y: center.x + py}
+    }
+} 
+
+initPreset(Math.round(randomNumber(0,7)))
+// initPreset(6)
 drawBodies()
 setInterval(update, 1)
 
-/**
-color: "#333"
-mass: 600000000
-position: {x: 960.0008531268458, y: 539.995521472571}
-radius: 20
-velocity: {x: -6.588758377691109, y: -85.95962999200012}
-__proto__: Object
+setInterval(()=>{
+    if( (updateCount==250) || (updateCount>250) ){
+        document.getElementById('sim-speed').innerText = '250 (max) '
+    } else { 
+        document.getElementById('sim-speed').innerText = updateCount
+    }
+    updateCount=0 
+},1000)
 
-color: "#333"
-mass: 200
-position: {x: 772.8238107115627, y: 611.323183186142}
-radius: 2
-velocity: {x: 10.681104679128106, y: 42.72126943622764}
-*/
+ctx.clearRect(0, 0, canvas.width, canvas.height)

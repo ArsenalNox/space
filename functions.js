@@ -7,6 +7,7 @@ function update(draw=true){
     if(draw){
         drawBodies();
     }
+    
 }
 
 function resizeHandle(){
@@ -26,10 +27,6 @@ function resizeHandle(){
     }
 }
 
-/**
- * Отрисовка тел
- * @param {array} bodies Массив всех тел для отрисовки
- */
 function drawBodies(){   //Отрисовка тел
     for (i in bodies) {
         if(centerVeiw){
@@ -43,8 +40,9 @@ function drawBodies(){   //Отрисовка тел
                 offsetX = center.x + (-bodies[bodyselector].position.x);
                 offsetY = center.y + (-bodies[bodyselector].position.y);
                 ctx.beginPath();
-                ctx.arc( (bodies[i].position.x + offsetX) / zoom , (bodies[i].position.y + offsetY) / zoom, bodies[i].radius, 0, 2 * Math.PI);
                 ctx.fillStyle = bodies[i].color;
+                ctx.strokeStyle = bodies[i].color;
+                ctx.arc( (bodies[i].position.x + offsetX), (bodies[i].position.y + offsetY), bodies[i].radius, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke()
             }
@@ -449,93 +447,32 @@ function commonTwoDorbitsCrest(num){ //4 линии
     }
     
     bodies.push(bodyNew)
-    console.log(bodies);
 }
 
 function commonBinarySystem(num){
-    let bodyNew1 = { 
-        radius: 2,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 95000000
-        },
-        position:{
-            x: center.x+100,
-            y: center.y
-        }
-    }
-    let bodyNew2 = { 
-        radius: 2,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: -95000000
-        },
-        position:{
-            x: center.x-100,
-            y: center.y
-        }
-    }
+    let bodyNew1 = new Body(2, 600000000, 0, 95000000, 100, 0)
+    let bodyNew2= new Body(2, 600000000, 0, -95000000, 100, 0)
+    bodies.push(bodyNew1, bodyNew2)
     for(let i=0; i<num; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 10,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: 2.5
-            },
-            position:{
-                x: center.x+500+i*70,
-                y: center.y
-            }
-        }
+        let bodyNew = new Body(1, 10, 0, 2.5, (500+i*70), 0)
         bodies.push(bodyNew)
     }
-    bodies.push(bodyNew1, bodyNew2)
 }
 
 function blackHole(num){
-    enableCollison = false
-    alpha = 1
-    let bodyNew1 = { 
-        radius: 2,
-        mass: 600000000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x+100,
-            y: center.y
-        }
-    }
+    enableCollison = 0
+    let bodyNew1 = new Body(2, 600000000000, 0, 95000000, 100, 0)
     bodies.push(bodyNew1)
     for(let i = 1; i<num; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: -(20*Math.sin(i))*2-200
-            },
-            position:{
-                x: center.x+i + 503,
-                y: center.y
-            }
-        }
+        let bodyNew = new Body(1, 200, 0, -(20*Math.sin(i))*2-200, (i+503), 0) 
         bodies.push(bodyNew)
     }
 }
 
 /**
  * @param {a} number min value 
- * @param {b} number max value*/
+ * @param {b} number max value
+ * */
 function randomNumber(a, b){
     return a+(Math.random()*(b-a))
 }
@@ -586,13 +523,7 @@ function initPreset(id=0){
             blackHole(700)
         break;
     }
-    // if(Math.round(randomNumber(0,1))){
-    //     centerVeiw = true
-    // }
+  
     bodyselector = Math.round(randomNumber(1, bodies.length-1))
-    if(debug){
-        if(centerVeiw){
-            console.log('Selected body '+ bodyselector +' for spectating');
-        }
-    }
+    console.log('Selected body '+ bodyselector +' for spectating');
 }
