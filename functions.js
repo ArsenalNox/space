@@ -7,8 +7,8 @@ function update(draw=true){
     if(draw){
         drawBodies();
     }
-    
-}
+    document.getElementById('body-info-quant').innerText = bodies.length
+}   
 
 function resizeHandle(){
     if(debug){console.log('Resizing canvas');}
@@ -63,10 +63,6 @@ function drawBodies(){   //Отрисовка тел
     }
 }
 
-/**
- * Высчитывание гравитацинонного взаимодействия между всеми телами
- * @param {bodies} Массив тел
- */
 function calculateBodyInteractions(){
     /** Расчитывание взаимодействий */
     for (i in bodies){
@@ -75,9 +71,10 @@ function calculateBodyInteractions(){
             if(j == i) { continue}
             if( bodiesToDelete.includes(j) || bodiesToDelete.includes(i) || bodiesToMerge.includes(j) || bodiesToMerge.includes(j)){continue}
             let body2 = bodies[j] 
-            //let force  = g * ( ( body1.mass * body2.mass) / Math.pow((Math.abs( Math.sqrt(Math.pow(body1.position.x,2) + Math.pow(body1.position.y,2)) - Math.sqrt(Math.pow(body2.position.x,2) + Math.pow(body2.position.y,2))) ), 2 ))
+
             let distance = Math.sqrt(Math.pow(body1.position.x - body2.position.x,2) + Math.pow(body1.position.y - body2.position.y, 2))
             if(distance==0){continue}
+
             let force = g * ( ( body1.mass * body2.mass) / Math.pow(distance, 2 ))
             if(debug && showCalculationDetails){
                 console.log(i,j,force)
@@ -108,30 +105,29 @@ function calculateBodyInteractions(){
                         body2.velocity.x += body1.velocity.x
                         body2.velocity.y += body1.velocity.y
                     }
-                    
-                    body1.color = "#f00";
-                    body2.color = "#f00";
                 }
             }
         }
-       
     }
     if(enableCollison){
         for(let i=0; i < bodiesToMerge.length; i++){
+            if(debug){
+                console.log('Merging ' + bodiesToMerge[i][0] + ' with ' + bodiesToMerge[i][1]);
+            }
             bodies[bodiesToMerge[i][0]].mass += bodies[bodiesToMerge[i][1]].mass
         }
-
         for(let i=0; i < bodiesToDelete.length; i++){
-            if(debug){
-                console.log(bodies[bodiesToDelete[i]]);
-                console.log('Deleted '+bodiesToDelete[i]+'\n'+bodies.length);}
             bodies.splice(bodiesToDelete[i]-i, 1)
+            if(debug){
+                console.log('Deleted '+ bodiesToDelete[i] + '\nBodies remain: ' + bodies.length);
+            }
         }
         bodiesToDelete = []
         bodiesToMerge = []
+        if(bodyselector!==0){
+            bodyselector--
+        }
     }
-
-    /** Изменение координат в соответсвии с изменением  */
     for (i in bodies) {
         bodies[i].position.x += bodies[i].velocity.x  / (bodies[i].mass * massMultiplayer)
         bodies[i].position.y += bodies[i].velocity.y  / (bodies[i].mass * massMultiplayer)
@@ -139,12 +135,12 @@ function calculateBodyInteractions(){
 }
 
 /**
+ * a_0
  * Заполняет канвас случайными телами
  * @param {times} Кол-во тел
  */
 function populate(times=10){
     for(let i = 0; i<times; i++){
-       
         let choice = randomNumber(1, 100)
         let rad, m
         if( choice > 98 ){
@@ -154,221 +150,82 @@ function populate(times=10){
             rad = Math.round(randomNumber(1,5))
             m = rad*1000
         }
-
-        let bodyNew = {
-            radius: rad,
-            mass: m,
-            color: '#000',
-            velocity:{
-                x: randomNumber(-100,100),
-                y: randomNumber(-100,100)
-            },
-            position:{
-                x: randomNumber(200,canvas.width-200)*zoom,
-                y: randomNumber(200,canvas.height-200)*zoom
-            }
-        }
+        let bodyNew = new Body(rad, m, randomNumber(-100,100), randomNumber(-100,100), randomNumber(200,canvas.width-200), randomNumber(200,canvas.width-200))
         bodies.push(bodyNew)
     }
     console.log(bodies);
 }
-
 
 /**
- * Генерирует планету с телами на её орбите
- * @param {num} number кол-во тел на орбите
+ * a_1
+ * @param {number} num 
  */
 function commonOrbit(num){
-    for(let i = 1; i<100; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: -40
-            },
-            position:{
-                x: center.x+i*5,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, -40, i*5, 0)
         bodies.push(bodyNew)
     }
-
-    let bodyNew = { 
-        radius: 10,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
-    
+    let bodyNew = new Body(10, 600000000, 0, 0, 0, 0) 
     bodies.push(bodyNew)
-    console.log(bodies);
 }
 
+/**
+ * a_2
+ * @param {number} num 
+ */
 function commonTwoDOrbitWing(num){ //Крыло
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: -40
-            },
-            position:{
-                x: center.x+i*10,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, -40, i*10, 0)
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 0.5,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: 40
-            },
-            position:{
-                x: center.x+i*10+5,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(0.5, 200, 0, 40, i*10+5, 0)
         bodies.push(bodyNew)
     }
-    let bodyNew = { 
-        radius: 5,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
-    
+    let bodyNew = new Body(5, 600000000)
     bodies.push(bodyNew)
-    console.log(bodies);
 }
 
+/**
+ * a_3
+ * @param {number} num 
+ */
 function commonTwoDOrbitSpiral(num){ //Спираль
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: -40
-            },
-            position:{
-                x: center.x+i*10,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, -40, i*20+60, 0)
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: 40
-            },
-            position:{
-                x: center.x-i*10-5,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, 40, -(i*20+60), 0)
         bodies.push(bodyNew)
     }
-    let bodyNew = { 
-        radius: 20,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
-    
+    let bodyNew = new Body(20, 600000000)
     bodies.push(bodyNew)
-    console.log(bodies);
 }
 
+/**
+ * a_4
+ * @param {number} num 
+ */
 function commonTwoDorbitsDestruct(num){ //2 на самоуничтожение
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: 40
-            },
-            position:{
-                x: center.x+i*10,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, 40, i*10)
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: 40
-            },
-            position:{
-                x: center.x-i*10,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){
+        let bodyNew = new Body(1, 200, 0, 40, -i*10)
         bodies.push(bodyNew)
     }
-    let bodyNew = { 
-        radius: 20,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
-    
+    let bodyNew = new Body(20, 600000000)
     bodies.push(bodyNew)
-    console.log(bodies);
 }
 
+/**
+ * a_5
+ * @param {number} num 
+ */
 function commonTwoDorbitsCrest(num){ //4 линии
-    for(let i = 1; i<40; i++){ //правая
+    for(let i = 1; i<num; i++){ //правая
         let bodyNew = { 
             radius: 1,
             mass: 200,
@@ -384,71 +241,26 @@ function commonTwoDorbitsCrest(num){ //4 линии
         }
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){ //верхняя
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 40,
-                y: 0
-            },
-            position:{
-                x: center.x,
-                y: center.y-i*10
-            }
-        }
+    for(let i = 1; i<num; i++){ //верхняя
+        let bodyNew = new Body(1, 200, 40, 0, 0, -i*10)
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){ //нижняя
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: -40,
-                y: 0
-            },
-            position:{
-                x: center.x,
-                y: center.y+i*10
-            }
-        }
+    for(let i = 1; i<num; i++){ //нижняя
+        let bodyNew = new Body(1, 200, -40, 0, 0, i*10)
         bodies.push(bodyNew)
     }
-    for(let i = 1; i<40; i++){ //Левая
-        let bodyNew = { 
-            radius: 1,
-            mass: 200,
-            color: globalColorregular,
-            velocity:{
-                x: 0,
-                y: -40
-            },
-            position:{
-                x: center.x-i*10,
-                y: center.y
-            }
-        }
+    for(let i = 1; i<num; i++){ //Левая
+        let bodyNew = new Body(1, 200, 0, -40, -i*10)
         bodies.push(bodyNew)
     }
-    let bodyNew = { 
-        radius: 20,
-        mass: 600000000,
-        color: globalColorregular,
-        velocity:{
-            x: 0,
-            y: 0
-        },
-        position:{
-            x: center.x,
-            y: center.y
-        }
-    }
-    
+    let bodyNew = new Body(20, 600000000)
     bodies.push(bodyNew)
 }
 
+/**
+ * a_6
+ * @param {number} num 
+ */
 function commonBinarySystem(num){
     let bodyNew1 = new Body(2, 600000000, 0, 95000000, 100, 0)
     let bodyNew2= new Body(2, 600000000, 0, -95000000, 100, 0)
@@ -459,12 +271,16 @@ function commonBinarySystem(num){
     }
 }
 
+/**
+ * a_7
+ * @param {number} num 
+ */
 function blackHole(num){
     enableCollison = 0
     let bodyNew1 = new Body(2, 600000000000, 0, 95000000, 100, 0)
     bodies.push(bodyNew1)
     for(let i = 1; i<num; i++){
-        let bodyNew = new Body(1, 200, 0, -(20*Math.sin(i))*2-200, (i+503), 0) 
+        let bodyNew = new Body(1, 150, 0, -120-i/2, (i+503), 0) 
         bodies.push(bodyNew)
     }
 }
@@ -478,10 +294,12 @@ function randomNumber(a, b){
 }
 
 function initPreset(id=0){
+    bodies = []
+    let num=0
     if(id==0){
-        id=Math.round(randomNumber(0,6))
+        id=Math.round(randomNumber(0,7))
     }
-    if(debug){console.log('selecting animation '+id);}
+    if(debug){console.log('Selected animation '+id);}
     switch(id){
         case 0:
             if(debug){console.log('Random bodies');}
@@ -494,33 +312,40 @@ function initPreset(id=0){
         break;
     
         case 2:
-            if(debug){console.log('Main body two-directional orbits');}
-            commonTwoDOrbitWing(randomNumber(1,10))
+            num = Math.round(randomNumber(20, 100))
+            if(debug){console.log(`Main body two-directional orbits with ${num} bodies`);}
+            commonTwoDOrbitWing(num)
         break;
 
         case 3:
-            if(debug){console.log('Main body two one-directional spiral orbits');}
+            //Я вообще не понимаю как но если оставить let num а не num3 то будет ошибка Reference error num has bеen daclared already (???????) (Объявление было в отдельных кейсах)
+            num = Math.round(randomNumber(20, 100))  
+            if(debug){console.log(`Main body two one-directional spiral orbits with ${num} bodies`);}
             commonTwoDOrbitSpiral(randomNumber(1,10))
         break;
             
         case 4:
-            if(debug){console.log('Main body two-directional terminating orbit');}
-            commonTwoDorbitsDestruct(randomNumber(1,10))
+            num = Math.round(randomNumber(20, 100))  
+            if(debug){console.log(`Main body two-directional terminating orbit with ${num} bodies`);}
+            commonTwoDorbitsDestruct(num)
         break;
 
         case 5:
+            num = Math.round(randomNumber(20, 100)) 
             if(debug){console.log('Main body four spiral orbits');}
-            commonTwoDorbitsCrest(randomNumber(1,10))
+            commonTwoDorbitsCrest(num)
         break;
 
         case 6:
-            if(debug){console.log('binarry system with n{1-10} bodies');}
-            commonBinarySystem(Math.round(randomNumber(1,10)))
+            num = Math.round(randomNumber(20, 100)) 
+            if(debug){console.log(`binarry system with ${num} bodies`);}
+            commonBinarySystem(num)
         break;
 
         case 7:
-            if(debug){console.log('Black hole with 200-600 bodies');}
-            blackHole(700)
+            num = Math.round(randomNumber(200, 700)) 
+            if(debug){console.log(`Black hole with ${num} bodies`);}
+            blackHole(num)
         break;
     }
   

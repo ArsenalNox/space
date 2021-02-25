@@ -11,7 +11,7 @@ var center = {
 }
 
 var enableCollison = true
-var centerVeiw = 1
+var centerVeiw = 0
 var zoom = 1
 var globalColorregular = '#FFF' 
 var globalColorback = '0,0,0' 
@@ -26,65 +26,36 @@ const g = 6.67 * Math.pow(10, -11)
 window.onresize = resizeHandle
 resizeHandle()
 
-let bodyNew1 = { 
-    radius: 20,
-    mass: 60000000,
-    color: '#333',
-    velocity:{
-        x: 1610000*2,
-        y: 0
-    },
-    position:{
-        x: center.x,
-        y: center.y-200
-    }
-}
-let bodyNew2 = { 
-    radius: 20,
-    mass: 60000000,
-    color: '#333',
-    velocity:{
-        x: -1610000*2,
-        y: 0
-    },
-    position:{
-        x: center.x,
-        y: center.y+200
-    }
-}
-
 var bodies = [   ]
 var bodiesToDelete = []
 var bodiesToMerge = []
 
 let Body = class {
     /**
-     * @param {num} radius 
-     * @param {num} mass 
-     * @param {num} vx 
-     * @param {num} vy 
-     * @param {num} px 
-     * @param {num} py 
+     * @param {number} radius 
+     * @param {number} mass 
+     * @param {number} vx 
+     * @param {number} vy 
+     * @param {number} px 
+     * @param {number} py 
+     * @param {string} color
      */
-    constructor(radius=1, mass=1, vx=0, vy=0, px=0, py=0){
+    constructor(radius=1, mass=1, vx=0, vy=0, px=0, py=0, color='black'){
         this.radius = radius
         this.mass = mass
         this.velocity = {x: vx, y: vy} 
-        this.position = {x: center.x + px, y: center.x + py}
+        this.position = {x: center.x + px, y: center.y + py}
+        this.color = color
     }
 } 
 
-initPreset(Math.round(randomNumber(0,7)))
-// initPreset(6)
+// initPreset(Math.round(randomNumber(0,7)))
+initPreset(7)
 drawBodies()
 setInterval(update, 1)
 
 setInterval(()=>{
-    if( (updateCount==250) || (updateCount>250) ){
-        document.getElementById('sim-speed').innerText = '250 (max) '
-    } else { 
-        document.getElementById('sim-speed').innerText = updateCount
-    }
+    document.getElementById('sim-speed').innerText = updateCount
     updateCount=0 
 },1000)
 
