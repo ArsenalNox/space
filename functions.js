@@ -10,7 +10,7 @@ function update(draw=true){
         drawBodies();
     }
     document.getElementById('body-info-quant').innerText = bodies.length
-    document.getElementById('bdlen').innerText = bodies.length
+    document.getElementById('bdlen').innerText = bodies.length-1
 }   
 
 function resizeHandle(){
@@ -370,6 +370,7 @@ function initMenuVal(){
     document.getElementById('asrange').value = alpha
 
     document.getElementById('bodycolorinput').value = globalColorregular
+
     document.getElementById('backcolorinput').value = globalColorback
 }
 

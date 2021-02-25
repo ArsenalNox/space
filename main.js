@@ -13,8 +13,8 @@ var center = {
 var enableCollison = true
 var centerVeiw = 0
 var zoom = 1
-var globalColorregular = '#FFFFFF' 
-var globalColorback = '200, 0, 0' 
+var globalColorregular = '#000000' 
+var globalColorback = '255, 255, 255' 
 var drawMethod = 'alpha' 
 
 var forceMultiplayer = 1; //Болше - быстрее
@@ -50,8 +50,8 @@ let Body = class {
     }
 } 
 
-// initPreset(Math.floor(randomNumber(0,8)))
-initPreset(7)
+initPreset(Math.floor(randomNumber(0,8)))
+// initPreset(7)
 drawBodies()
 setInterval(update, 1)
 
