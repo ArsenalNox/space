@@ -13,11 +13,12 @@ var center = {
 var enableCollison = true
 var centerVeiw = 0
 var zoom = 1
-var globalColorregular = '#FFF' 
-var globalColorback = '0,0,0' 
+var globalColorregular = '#FFFFFF' 
+var globalColorback = '200, 0, 0' 
+var drawMethod = 'alpha' 
 
 var forceMultiplayer = 1; //Болше - быстрее
-var massMultiplayer = 1; //Больше - медленнее 
+var massMultiplier = 1; //Больше - медленнее 
 
 var updateCount = 0
 var bodyselector = 0
@@ -49,7 +50,7 @@ let Body = class {
     }
 } 
 
-// initPreset(Math.round(randomNumber(0,7)))
+// initPreset(Math.floor(randomNumber(0,8)))
 initPreset(7)
 drawBodies()
 setInterval(update, 1)
@@ -59,4 +60,7 @@ setInterval(()=>{
     updateCount=0 
 },1000)
 
-ctx.clearRect(0, 0, canvas.width, canvas.height)
+initMenuVal()
+if(drawMethod == 'no_alpha'){
+ctx.fillStyle = "rgb("+globalColorback+")";
+ctx.fillRect(0, 0, canvas.width, canvas.height)}

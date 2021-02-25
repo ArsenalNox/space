@@ -20,33 +20,58 @@
             border: 1px solid white;
             color: white;
             padding: 0.5rem;
+            background-color: black;
         }
         .info{
             padding: 0.1rem;
+        }
+        .head{
+            display: flex;
+        }
+        .head p{
+            width: 50%;
+        }
+        .clickable{
+            text-align: right;
+        }
+        .clickable:hover{
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .hiddn{
+            position: fixed;
+            display: none;
         }
     </style>
 </head>
 
 <body>
-    <section class='monitor-wrap'>
-        <p>Панель управления</p>
-        <p class='info'> Кол-во тел: <span id='body-info-quant'> </span></p>
-        <p class='info'> Обновлений в секунду: <span id='sim-speed'> </span></p>
-        <p class='info'> Коллизия <span id=''> </span> </p>
-        <p class='info'> Множитель гравитации <span id=''> </span> </p>
-        <p class='info'> Множитель массы <span id=''> </span> </p>
-        <p class='info'> Альфа <span id=''> </span> </p>
-        <p class='info'> Центрирование <span id=''> </span> </p>
-        <p class='info'> Цвет тел <span id=''> </span> </p>
-        <p class='info'> Цвет фона <span id=''> </span> </p>
+    <section class='monitor-wrap' id='mnt1'>
+        <div class='head'>
+            <p>Панель управления</p>
+            <p class="clickable" onclick='hideMenu()'>Скрыть</p>
+        </div>
+        <p class='info'> Кол-во тел:            <span id='body-info-quant'> </span></p>
+        <p class='info'> Обновлений в секунду:  <span id='sim-speed'> </span></p>
+        <p class='info'> Коллизия               <button id='collision-button' onclick='changeCollision()'> выкл </button> </p>
+        <p class='info'> Множитель гравитации   <span id='fms'></span>  <input type="range" min='0.1' max='10' step='0.1' id='forcemultrange' onchange='changeForceMultiplier()'> </p>
+        <p class='info'> Множитель массы        <span id='mms'></span>  <input type="range" min='0.1' max='10' step='0.1' id='massmultrange' onchange='changeMassMultiplier()'> </p>
+        <p class='info'> Альфа                  <span id='as'></span>   <input type="range" min='0.001' max='0.3' step='0.001' id='asrange' onchange='changeAlpha()'> </p>
+        <p class='info'> Центрирование          <button id='centerStatus' onclick="changeCenterView()"> </button> </p>
+        <p class='info'> Тело для центрирования <input id='bdselrange' type="number" min='0' max='99999'> ( max <span id='bdlen'> </span> ) <button onclick='changeBodySelector()'> Поменять </button> </p>
+        <p class='info'> Цвет тел               <input type="color" id='bodycolorinput' onchange="changeBodyColor()"> </p>
+        <p class='info'> Цвет фона              <input type="color" id='backcolorinput' onchange="changeBackgroundColor()"> </p>
 
         <hr>
         <div style="display: grid;">
             <button> Удалить все тела </button>
-            <button> Новая анимация </button>
+            <button> Новая случайная анимация </button>
+            <button> Перезагрузить анимацию </button>
         </div>
-
     </section>
+
+    <section class='hiddn'><button id='hndbtn'></button></section>
+
     <canvas id='cvs'></canvas>
 
     <script src="functions.js"></script>
