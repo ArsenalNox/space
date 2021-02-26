@@ -36,15 +36,16 @@ function drawBodies(){   //Отрисовка тел
             if(i == bodyselector){
                 ctx.beginPath();
                 ctx.arc(center.x, center.y, bodies[i].radius, 0, 2 * Math.PI);
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = globalColorregular
+
                 ctx.fill();
                 ctx.stroke()
             } else {
                 offsetX = center.x + (-bodies[bodyselector].position.x);
                 offsetY = center.y + (-bodies[bodyselector].position.y);
                 ctx.beginPath();
-                ctx.fillStyle = bodies[i].color;
-                ctx.strokeStyle = bodies[i].color;
+                ctx.fillStyle = globalColorregular
+                ctx.strokeStyle = globalColorregular
                 ctx.arc( (bodies[i].position.x + offsetX), (bodies[i].position.y + offsetY), bodies[i].radius, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke()
@@ -96,8 +97,8 @@ function calculateBodyInteractions(){
                     if(body1.mass > body2.mass){
                         bodiesToMerge.push([i,j])
                         bodiesToDelete.push(j)
-                        body1.velocity.x += body2.velocity.x
-                        body1.velocity.y += body2.velocity.y
+                        body1.velocity.x = (body1.velocity.x + body2.velocity.x )/2
+                        body1.velocity.y = (body1.velocity.y + body2.velocity.y)/2
                     } else { 
                         bodiesToMerge.push([i,j])
                         bodiesToDelete.push(i)
@@ -108,6 +109,7 @@ function calculateBodyInteractions(){
             }
         }
     }
+
     if(enableCollison){
         for(let i=0; i < bodiesToMerge.length; i++){
             if(debug){
@@ -117,15 +119,16 @@ function calculateBodyInteractions(){
         }
         for(let i=0; i < bodiesToDelete.length; i++){
             bodies.splice(bodiesToDelete[i]-i, 1)
+            if(bodyselector!==0){
+                bodyselector--
+            }
             if(debug){
                 console.log('Deleted '+ bodiesToDelete[i] + '\nBodies remain: ' + bodies.length);
             }
         }
         bodiesToDelete = []
         bodiesToMerge = []
-        if(bodyselector!==0){
-            bodyselector--
-        }
+        
     }
     for (i in bodies) {
         bodies[i].position.x += bodies[i].velocity.x  / (bodies[i].mass * massMultiplier)
@@ -149,7 +152,7 @@ function populate(times=10){
             rad = randomNumber(0.1,5)
             m = rad*1000
         }
-        let bodyNew = new Body(rad, m, randomNumber(-100,100), randomNumber(-100,100), -center.x + randomNumber(200, canvas.width-500), -center.y + randomNumber(200, canvas.width-500))
+        let bodyNew = new Body(rad, m, randomNumber(-100,100), randomNumber(-100,100), randomNumber(-canvas.width/2, canvas.width/2), randomNumber(-canvas.height/2, canvas.height/2))
         bodies.push(bodyNew)
     }
     console.log(bodies);
@@ -249,11 +252,11 @@ function commonTwoDorbitsCrest(num){ //4 линии
  * @param {number} num 
  */
 function commonBinarySystem(num){
-    let bodyNew1 = new Body(1, 600000000, 0, 95000000, 100, 0)
-    let bodyNew2 = new Body(1, 600000000, 0, -95000000, -100, 0)
+    let bodyNew1 = new Body(10, 6000000000, 0, 950000000*3, 150, 0)
+    let bodyNew2 = new Body(10, 6000000000, 0, -950000000*3, -150, 0)
     bodies.push(bodyNew1, bodyNew2)
     for(let i=0; i<num; i++){
-        let bodyNew = new Body(0.1, 10, 0, 2.5, (500+i*20), 0)
+        let bodyNew = new Body(0.1, 100, 0, 80, (700+i*5), 0)
         bodies.push(bodyNew)
     }
 }
@@ -267,7 +270,7 @@ function blackHole(num){
     let bodyNew1 = new Body(2, 300000000000, 0, 95000000, 100, 0)
     bodies.push(bodyNew1)
     for(let i = 1; i<num; i++){
-        let bodyNew = new Body(0.05, 150, 200, -120, (i+200)) 
+        let bodyNew = new Body(0.1, 1000, 600, 500, 200+i/5, 500) 
         bodies.push(bodyNew)
     }
 }
@@ -282,6 +285,7 @@ function randomNumber(a, b){
 
 function initPreset(id=-1){
     bodies = []
+    resizeHandle()
     let num=0
     if(id==-1){
         id=Math.round(randomNumber(0,7))
@@ -297,11 +301,11 @@ function initPreset(id=-1){
         case 1:
             num = Math.round(40, 200)
             if(debug){console.log(`Main body orbit with ${num} bodies`);}
-            commonOrbit(randomNumber(1,10))
+            commonOrbit(num)
         break;
     
         case 2:
-            num = Math.round(randomNumber(100, 400))
+            num = Math.round(randomNumber(50, 100))
             if(debug){console.log(`Main body two-directional orbits with ${num}x2 bodies`);}
             commonTwoDOrbitWing(num)
         break;
@@ -310,7 +314,7 @@ function initPreset(id=-1){
             //Я вообще не понимаю как но если оставить let num а не num3 то будет ошибка Reference error num has bеen daclared already (???????) (Объявление было в отдельных кейсах)
             num = Math.round(randomNumber(20, 100))  
             if(debug){console.log(`Main body four one-directional spiral orbits with ${num}x4 bodies`);}
-            commonTwoDOrbitSpiral(randomNumber(1,10))
+            commonTwoDOrbitSpiral(num)
         break;
             
         case 4:
@@ -342,9 +346,10 @@ function initPreset(id=-1){
     console.log('Selected body '+ bodyselector +' for spectating');
 }
 
+
 //Функции меню
 /**
- * Инициализирует значение в меню, которые не изменяются со временет
+ * Инициализирует значения в меню, которые не изменяются со временет
  */
 function initMenuVal(){
     if(enableCollison){
@@ -358,7 +363,6 @@ function initMenuVal(){
     } else { 
         document.getElementById('centerStatus').innerText = 'Выкл'
     }
-
 
     document.getElementById('mms').innerText = massMultiplier
     document.getElementById('massmultrange').value = massMultiplier
@@ -411,7 +415,7 @@ function changeAlpha(){
 }
 
 function changeBodySelector(){
-    bodyselector=document.getElementById('bdselrange').value
+    bodyselector = document.getElementById('bdselrange').value
 }
 
 function changeBodyColor(){
@@ -429,4 +433,82 @@ function hideMenu(){
         menu.style.display = 'none'
 
     }
+}
+
+function changeColor(){
+    if(colorSwitch == -1){
+        colorSwitch = Math.round(randomNumber(1,6))
+    }
+    let generateNew = false
+    switch(colorSwitch){
+        case 1:
+            if((colors.r + 1) < 255){
+                colors.r++
+            } else {
+                generateNew = true
+            }
+        break;
+        
+        case 2:
+            if((colors.g + 1) < 255){
+                colors.g++
+            } else {
+                generateNew = true
+            }
+        break;
+        
+        case 3:
+            if((colors.b + 1) < 255){
+                colors.b++
+            } else {
+                generateNew = true
+            }
+        break;
+
+        case 4:
+            if(colors.r > 0){
+                colors.r--
+            } else {
+                generateNew = true
+            }
+        break;
+        
+        case 5:
+            if(colors.g > 0){
+                colors.g--
+            } else {
+                generateNew = true
+            }
+        break;
+        
+        case 6:
+            if(colors.b > 0){
+                colors.b--
+            } else {
+                generateNew = true
+            }
+        break;
+    }
+
+    if(randomColorDrop){
+        if(Math.round(randomNumber(1,1000) < 3)){
+            colorSwitch = -1
+            console.log('Random switch');
+        }
+    }
+
+    if(generateNew){
+        colorSwitch = -1
+    }
+
+    globalColorregular = rgbToHex(colors.r, colors.g, colors.b)
+}
+
+function toBase16(int){
+    let hex = int.toString(16)
+    return hex.length == 1 ? "0"+hex : hex
+}
+
+function rgbToHex(r,g,b){
+    return "#" + toBase16(r) + toBase16(g) + toBase16(b) 
 }

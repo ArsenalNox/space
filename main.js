@@ -1,5 +1,7 @@
 var debug = true
 var showCalculationDetails = false
+var resetAnimationInterval 
+var resetAnimation = true
 
 var canvas = document.getElementById('cvs')
 var ctx = canvas.getContext('2d')
@@ -10,12 +12,18 @@ var center = {
     y: canvas.height/2
 }
 
-var enableCollison = true
-var centerVeiw = 0
+var enableCollison = false
+var centerVeiw = false
 var zoom = 1
 var globalColorregular = '#000000' 
 var globalColorback = '255, 255, 255' 
 var drawMethod = 'alpha' 
+
+var colorChange = false
+var colorChangeInterval
+var colors = {r:0, g:0, b:0}
+var colorSwitch = -1
+var randomColorDrop = true
 
 var forceMultiplayer = 1; //Болше - быстрее
 var massMultiplier = 1; //Больше - медленнее 
@@ -51,7 +59,7 @@ let Body = class {
 } 
 
 initPreset(Math.floor(randomNumber(0,8)))
-// initPreset(7)
+// initPreset(6)
 drawBodies()
 setInterval(update, 1)
 
@@ -59,6 +67,14 @@ setInterval(()=>{
     document.getElementById('sim-speed').innerText = updateCount
     updateCount=0 
 },1000)
+
+if(colorChange){
+    colorChangeInterval = setInterval(changeColor, 1)
+}
+
+if(resetAnimation){
+    resetAnimationInterval = setInterval(initPreset, 1000*60*60)
+}
 
 initMenuVal()
 if(drawMethod == 'no_alpha'){
